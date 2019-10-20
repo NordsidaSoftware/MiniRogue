@@ -7,13 +7,15 @@ namespace MiniRogue
     {
         public int Char;
         public int X, Y;
+        public bool Block;
         public List<ESC> Components;
 
-        public Item(int @char, int x, int y)
+        public Item(int @char, int x, int y, bool Block)
         {
             Char = @char;
             X = x;
             Y = y;
+            this.Block = Block;
             Components = new List<ESC>();
         }
 
@@ -25,7 +27,7 @@ namespace MiniRogue
 
         public void Draw(Display display)
         {
-            display.PutChar(X, Y, Char);
+            display.SetChar(X, Y, Char);
         }
     }
 }

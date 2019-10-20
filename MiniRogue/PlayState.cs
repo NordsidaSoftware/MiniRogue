@@ -5,16 +5,21 @@ namespace MiniRogue
 {
     public class PlayState : State
     {
-        World world;
+        internal World world;
+        internal StoryManager storyManager;
 
         public PlayState(StateManager Manager):base(Manager)
         {
             world = new World(Manager);
+            storyManager = new StoryManager(this);
+            storyManager.Enqueue(new StartHappening(5));
         }
+
 
         public override void Update(GameTime gameTime)
         {
             world.Update(gameTime);
+            storyManager.Update(gameTime);
             base.Update(gameTime);
         }
 

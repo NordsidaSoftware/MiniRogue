@@ -22,6 +22,7 @@ namespace MiniRogue
             foreach (ESC esc in Components) { esc.Update(gameTime); }
         }
 
+
         public void Draw(Display display)
         {
             display.PutChar(X, Y, Char);

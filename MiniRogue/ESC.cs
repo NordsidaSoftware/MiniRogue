@@ -26,9 +26,12 @@ namespace MiniRogue
 
         private void Move(int dx, int dy)
         {
-            foreach (Item i in world.Features) { if (i.X == Owner.X+dx && i.Y == Owner.Y + dy) { return; } }
+            foreach (Item i in world.Features)
+                { if (i.X == Owner.X+dx && i.Y == Owner.Y + dy && i.Block) { return; } }
+
             Owner.X += dx;
             Owner.Y += dy;
+        
         }
     }
 }
