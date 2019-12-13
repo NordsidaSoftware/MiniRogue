@@ -8,103 +8,76 @@ namespace MiniRogue
 {
     internal class World
     {
-        internal Display infoPanel;
-        internal Display display;
+        
         internal StateManager Manager;
-        internal List<Actor> Actors;
-        internal List<Item> Features;
+       
+        internal Map Map;
+        
+        internal Camera Camera;
+
+        internal FXManager FXManager;
+
+        internal Renderer Render;
       
-        public World(StateManager Manager)
+      
+        public World(StateManager Manager, int DisplayWidth, int DisplayHeight, Renderer Render)
         {
             this.Manager = Manager;
+            Map = new Map(300, 500);
+            Camera = new Camera(this, DisplayWidth, DisplayHeight);                         
+            FXManager = new FXManager(this);
+            this.Render = Render;
            
-            Actors = new List<Actor>();
-            Features = new List<Item>();
-
-            display = new Display(Manager.game.Content.Load<Texture2D>("cp437T"),
-                                  Manager.game.Content.Load<Texture2D>("White"),
-                0,
-                0,
-                Manager.game.GraphicsDevice.Viewport.Width,
-                Manager.game.GraphicsDevice.Viewport.Height - 40);
-
-            infoPanel = new Display(
-                Manager.game.Content.Load<Texture2D>("cp437T"),
-                 Manager.game.Content.Load<Texture2D>("White"),
-                10,
-                Manager.game.GraphicsDevice.Viewport.Height - 40,
-                Manager.game.GraphicsDevice.Viewport.Width - 20,
-                40);
-
-            infoPanel.SetCharSize(20);
-            infoPanel.SetForegroundColor(Color.Red);
-            infoPanel.SetBackgroundColor(Color.Yellow);
-
-            infoPanel.Write("Test");
-           
-
-            Actor player = new Actor(2, 10, 10);
-            player.Components.Add(new MovementContoller(player, this));
-            Actors.Add(player);
-            MakeRoom();
-
+            CreateNewLevel();
         }
 
-       
-
-        private void MakeRoom()
+        private void CreateNewLevel()
         {
-            display.SetCharSize(20);
-            string[] layout = new string[14] {"#########################",
-                                              "#  [---]                #",
-                                              "#  T                    #",
-                                              "#                       #",
-                                              "#                       #",
-                                              "#                       #",
-                                              "##################      #",
-                                              "#                       #",
-                                              "#   hT                  #",
-                                              "#                       #",
-                                              "#                       #",
-                                              "#                       #",
-                                              "#                       #",
-                                              "############//###########" };
+            Mapper mp = new Mapper(this);
+            mp.GenerateMap();
 
-            for (int y = 0; y < layout.Length; y++)
+
+        //  +++ DOWN STAIRS : NOT IMPLEMENTED +++
+        Point? DownStairs = Map.FindEmptyTile();
+            if (DownStairs != null) { Map.AddItem(new DStair(DownStairs.Value.X, DownStairs.Value.Y)); }
+
+            Actor player = new Actor(2, mp.Layout[0].Rectangle.Center.X, mp.Layout[0].Rectangle.Center.Y)
             {
-                for (int x = 0; x < layout[y].Length; x++)
-                {
-                    bool block = false;
-                    switch (layout[y][x])
-                    {
-                        case '#': { block = true; break; }
-                        case '[': { block = true; break; }
-                        case ']': { block = true; break; }
-                        case 'T': { block = true; break; }
-                    }
-                    Features.Add(new Item(layout[y][x], x, y, block));
-                }
-            }
+                color = Color.Red
+            };
+            player.Components.Add(new MovementController(player, this));
+            player.Components.Add(new ThrowController(player, this));
+            player.Components.Add(new CanUseLookCommand(player, this));
+           // player.Components.Add(new SolidBody(player, this));
+            player.Components.Add(new CameraSticky(player, this));
+            player.Components.Add(new CanComputeFOV(player, this, 7));
+            player.Components.Add(new LightSource(player, this, 10, Color.LightGoldenrodYellow));
+            Map.Actors.Add(player);
+
+            Actor NPC = new Actor(1, mp.Layout[0].Rectangle.Center.X+1, mp.Layout[0].Rectangle.Center.Y+1)
+            {
+                color = Color.Yellow
+            };
+            NPC.Components.Add(new RandomWalkAIMovementController(NPC, this));
+            NPC.Components.Add(new DamageController(NPC, this, 5));
+            NPC.Components.Add(new LightSource(NPC, this, 5, Color.LightBlue));
+            Map.Actors.Add(NPC);
         }
+
+
 
         public void Update(GameTime gameTime)
         {
+           // FXManager.Update(gameTime);  -disabled for now...
+            Map.Update(gameTime);
            
-            {
-                foreach (Actor actor in Actors) { actor.Update(gameTime); }
-              
-            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            display.Clear();
-            foreach (Item feature in Features) { feature.Draw(display); }
-            foreach (Actor actor in Actors) { actor.Draw(display); }
-            display.Draw(spriteBatch);
-            infoPanel.Draw(spriteBatch);
-
-           
+          
+             
+        
         }
     }
 }

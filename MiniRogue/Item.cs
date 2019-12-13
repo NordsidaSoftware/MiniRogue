@@ -6,16 +6,15 @@ namespace MiniRogue
     internal class Item
     {
         public int Char;
+        public Color Color;
         public int X, Y;
-        public bool Block;
         public List<ESC> Components;
 
-        public Item(int @char, int x, int y, bool Block)
+        public Item(int Char, int x, int y)
         {
-            Char = @char;
+            this.Char = Char;
             X = x;
             Y = y;
-            this.Block = Block;
             Components = new List<ESC>();
         }
 
@@ -27,7 +26,14 @@ namespace MiniRogue
 
         public void Draw(Display display)
         {
-            display.SetChar(X, Y, Char);
+            display.SetChar(X, Y, Char, Color);
         }
+    }
+
+   
+
+    internal class DStair : Item
+    {
+        public DStair(int x, int y) : base('>', x, y) { Color = Color.Yellow; }
     }
 }

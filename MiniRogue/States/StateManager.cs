@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace MiniRogue
 {
+    /// <summary>
+    /// The State class is the virtual class defining the state  
+    /// </summary>
     public class State
     {
         internal StateManager Manager;
@@ -18,6 +21,11 @@ namespace MiniRogue
         public virtual void Update(GameTime gameTime) { }
         public virtual void Draw(SpriteBatch spriteBatch) { }
     }
+
+    /// <summary>
+    /// The StateManager Class is responsible for holding the current game state
+    /// and the management of the states stack.
+    /// </summary>
     public class StateManager
     {
         private Stack<State> states;

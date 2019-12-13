@@ -1,32 +1,37 @@
 ﻿using System;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MiniRogue
+namespace RoomEditor
 {
     internal class Display
     {
         Texture2D font;
         const int fontSize = 10;
-        public Color BGColor = Color.Black;
+        public Color BGColor = Color.Transparent;
         public Color FGColor = Color.White;
         
         internal int X;
         internal int Y;
         internal int Width;
         internal int Height;
-        private int[,] Grid;
-        private Color[,] BackgroundGrid;
-        private Color[,] ForegroundGrid;
+        internal int[,] Grid;
+        internal Color[,] BackgroundGrid;
+        internal Color[,] ForegroundGrid;
         public int CharSize;
 
         private Point Cursor;
+
+       
+        public int CurrentChar;
+        public Rectangle Rectangle;
         
       
         public bool Border { get; private set; }
 
-        public int TileWidth { get { return Grid.GetLength(0); } }
-        public int TileHeight { get { return Grid.GetLength(1); } }
+        public int TileWidth { get { return Grid.GetLength(0)-2; } }
+        public int TileHeight { get { return Grid.GetLength(1)-2; } }
 
         public Display(Texture2D font, int X, int Y, int Width, int Height, bool Border = false)
         {
@@ -38,6 +43,18 @@ namespace MiniRogue
             Cursor = new Point(0, 0);
             SetCharSize(10);
             if (Border) { SetBorder(); }
+            if (Border) { Rectangle = new Rectangle(X + CharSize, Y + CharSize, Width - CharSize*2, Height - CharSize*2); }
+            else Rectangle = new Rectangle(X, Y, Width, Height);
+        }
+
+        public void Rescale(int dx, int dy)
+        {
+            if ((Width + dx * CharSize) > CharSize && ( Width + dx * CharSize <= 500 ))
+                Width = Width + dx * CharSize;
+            if ((Height + dy * CharSize) > CharSize && (Height + dy * CharSize <= 400))
+                Height = Height + dy*CharSize;
+
+            RecalculateGrid();
         }
 
         private void RecalculateGrid()
@@ -45,7 +62,7 @@ namespace MiniRogue
             Grid = new int[Width / CharSize, Height / CharSize];
             BackgroundGrid = new Color [Width / CharSize, Height / CharSize];
 
-            
+            // .
             for ( int x = 0; x < BackgroundGrid.GetLength(0); x++)
             {
                 for ( int y = 0; y < BackgroundGrid.GetLength(1); y++)
@@ -62,6 +79,8 @@ namespace MiniRogue
                 }
             }
             if (Border) { SetBorder(); }
+            if (Border) { Rectangle = new Rectangle(X + CharSize, Y + CharSize, Width - CharSize * 2, Height - CharSize * 2); }
+           
         }
 
         internal int GetChar(int x, int y)
@@ -92,13 +111,11 @@ namespace MiniRogue
             ForegroundGrid[x, y] = color;
             Grid[x, y] = Char;
         }
-        internal void SetChar(int x, int y, int currentTileChar, Color foregroundColor, Color backgroundColor)
-        {
-            ForegroundGrid[x, y] = foregroundColor;
-            BackgroundGrid[x, y] = backgroundColor;
-            Grid[x, y] = currentTileChar;
-        }
 
+        public void SetChar(Point point, int Char, Color color)
+        {
+            SetChar(point.X, point.Y, Char, color);
+        }
         private void SetBorder()
         {
             Border = true;
@@ -118,10 +135,7 @@ namespace MiniRogue
             SetChar(0, Grid.GetLength(1)-1, 192);
             SetChar(Grid.GetLength(0)-1, Grid.GetLength(1)-1, 217);
         }
-        public void PutChar(int x, int y, int Char)
-        {
-            Grid[x, y] = Char;
-        }
+     
         public void Write(string message)
         { 
             for (int index = 0; index < message.Length; index++)
@@ -151,6 +165,7 @@ namespace MiniRogue
             else { if (Cursor.Y >= Grid.GetLength(1)) { Cursor = Border ? new Point(1, 1) : Point.Zero; } }
         }
 
+        internal void Fill(int Char) { Fill((char)Char); }
         internal void Fill(char Char)
         {
             int x_stop = Border ? Grid.GetLength(0) - 1 : Grid.GetLength(0);
@@ -166,7 +181,17 @@ namespace MiniRogue
                 }
             }
         }
-        
+
+        internal string ReadLine()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int x = 0; x < Cursor.X; x++ )
+            {
+                sb.Append(Grid[x, Cursor.Y]);
+            }
+            return sb.ToString();
+        }
+
         internal void SetBackgroundColor(Color BGColor)
         {
             this.BGColor = BGColor;
@@ -199,23 +224,25 @@ namespace MiniRogue
             {
                 for (int y = 0; y < Grid.GetLength(1); y++)
                 {
-                     spriteBatch.Draw(font, new Rectangle(x * CharSize + X, y * CharSize + Y, CharSize, CharSize),
-                                    new Rectangle(11*fontSize, 13*fontSize, 10, 10),BackgroundGrid[x,y]);  
+                    spriteBatch.Draw(font, new Rectangle(x * CharSize + X, y * CharSize + Y, CharSize, CharSize),
+                                     new Rectangle(11*CharSize, 13*CharSize, 10, 10),BackgroundGrid[x,y]);
                 }
             }
 
-            
             //    - Draw foreground grid -
             for (int x = 0; x < Grid.GetLength(0); x++)
             {
                 for (int y = 0; y < Grid.GetLength(1); y++)
                 {
+                    
                     int x_source = Grid[x, y] % 16 * fontSize;
                     int y_source = Grid[x, y] / 16 * fontSize;
                     spriteBatch.Draw(font, new Rectangle(x * CharSize + X, y * CharSize + Y, CharSize, CharSize),
                         new Rectangle(x_source, y_source, 10, 10), ForegroundGrid[x,y]);
                 }
-            } 
+            }
+
+         
         }
     }
 }

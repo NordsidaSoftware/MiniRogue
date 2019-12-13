@@ -16,7 +16,12 @@ namespace MiniRogue
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+
+          //  graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+          //  graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height ;
+
             Content.RootDirectory = "Content";
+         
          
         }
 
@@ -28,7 +33,8 @@ namespace MiniRogue
         /// </summary>
         protected override void Initialize()
         {
-           
+            // Randomizer.Setup(1976);
+            Randomizer.Setup(System.DateTime.Now.Second);
             manager = new StateManager(this);
             manager.Push(new PlayState(manager));
 
@@ -78,7 +84,7 @@ namespace MiniRogue
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                               null, null, null, null);

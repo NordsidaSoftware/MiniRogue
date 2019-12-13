@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniRogue", "MiniRogue\MiniRogue.csproj", "{D0E8FB32-7F88-4D15-8B59-ADA78FC8E675}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomEditor", "RoomEditor\RoomEditor.csproj", "{45D7EFA7-4108-423C-B045-DE0287FE2485}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,6 +17,10 @@ Global
 		{D0E8FB32-7F88-4D15-8B59-ADA78FC8E675}.Debug|x86.Build.0 = Debug|x86
 		{D0E8FB32-7F88-4D15-8B59-ADA78FC8E675}.Release|x86.ActiveCfg = Release|x86
 		{D0E8FB32-7F88-4D15-8B59-ADA78FC8E675}.Release|x86.Build.0 = Release|x86
+		{45D7EFA7-4108-423C-B045-DE0287FE2485}.Debug|x86.ActiveCfg = Debug|x86
+		{45D7EFA7-4108-423C-B045-DE0287FE2485}.Debug|x86.Build.0 = Debug|x86
+		{45D7EFA7-4108-423C-B045-DE0287FE2485}.Release|x86.ActiveCfg = Release|x86
+		{45D7EFA7-4108-423C-B045-DE0287FE2485}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
